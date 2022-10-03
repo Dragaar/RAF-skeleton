@@ -12,11 +12,11 @@ public class Task {
 	private static RandomAccessFile raf;
 
 	private static Thread[] threads;
-	private static AtomicInteger rowIndex = new AtomicInteger();
-	//private static int rowIndex;
+	//private static AtomicInteger rowIndex = new AtomicInteger();
+	private static int rowIndex;
 	public static void createRAF(int numberOfThreads, int numberOfIterations, int pause) throws IOException {
-		rowIndex.set(0);
-		//rowIndex = 0;
+		//rowIndex.set(0);
+		rowIndex = 0;
 		clearFile();
 
 		Runnable logic = () -> {
@@ -24,9 +24,9 @@ public class Task {
 			try(RandomAccessFile file =  new RandomAccessFile(FILE_NAME, "rws");)
 			{
 
-				//synchronized (Task.class) {
-					int rowFiller = rowIndex.getAndAdd(1);
-					//int rowFiller = rowIndex++;
+				synchronized (Task.class) {
+					//int rowFiller = rowIndex.getAndAdd(1);
+					int rowFiller = rowIndex++;
 
 					if (rowFiller == 0) {
 						file.seek(0);
@@ -43,7 +43,7 @@ public class Task {
 					}
 					file.write("\n".getBytes(StandardCharsets.UTF_8));
 
-				//}
+				}
 			} catch (IOException | InterruptedException e) {e.printStackTrace();}
 		};
 
